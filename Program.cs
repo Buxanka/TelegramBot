@@ -15,11 +15,13 @@ namespace TelegramBot
 {
     public class Bot
     {
+        public string sdf = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         public static int Rand = 0;
+        public static string PATHTEXTCAT = Environment.CurrentDirectory + @"\RandomTextCats\";
+        public static string PATHKIT = Environment.CurrentDirectory + @"\RandomKit\";
         static ITelegramBotClient bot = new TelegramBotClient("5454804462:AAEtI9g6blkalFPuseubc7YZxA7oN89nfQ8");
         public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-            // Некоторые действия
             Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(update));
             if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
             {
@@ -29,14 +31,49 @@ namespace TelegramBot
                     await botClient.SendTextMessageAsync(message.Chat, "Доброго времени суток!");
                     return;
                 }
-                if (message.Text.ToLower() == "/hi")
+                if (message.Text.ToLower() == "/support")
                 {
-                    await botClient.SendTextMessageAsync(message.Chat, "Привет, милая!");
+                    RandomText.File();
+                    var randomText = new Random();
+                    Rand = randomText.Next(0, 17);
+                    for (int i = 1; i < RandomText._randomText.Count; i++)
+                    {
+                        if (Rand == i)
+                        {
+                            await botClient.SendTextMessageAsync(message.Chat, RandomText._randomText[i]);
+                        }
+                    }
                     return;
                 }
                 if (message.Text.ToLower() == "/love")
                 {
-                    await RandomTextCats.hzhzhz();
+                    RandomTextCats.PutInToListRandomTextCats();
+                    var randomLove = new Random();
+                    Rand = randomLove.Next(0, 49);
+                    for (int i = 1; i <= RandomTextCats._randomTextCats.Count; i++)
+                    {
+                        if (Rand == i)
+                        {
+                            using (var fileStream = new FileStream(PATHTEXTCAT + RandomTextCats._randomTextCats[i], FileMode.Open, FileAccess.Read, FileShare.Read))
+                                await botClient.SendPhotoAsync(message.Chat.Id, new InputOnlineFile(fileStream));
+                            return;
+                        }
+                    }
+                }
+                if (message.Text.ToLower() == "/kit")
+                {
+                    RandomKit.PutInToListRandomKit();
+                    var randomKit = new Random();
+                    Rand = randomKit.Next(0, 4);
+                    for (int i = 1; i <= RandomKit._randomKit.Count; i++)
+                    {
+                        if (Rand == i)
+                        {
+                            using (var fileStream = new FileStream(PATHKIT + RandomKit._randomKit[i], FileMode.Open, FileAccess.Read, FileShare.Read))
+                                await botClient.SendPhotoAsync(message.Chat.Id, new InputOnlineFile(fileStream));
+                            return;
+                        }
+                    }
                 }
                 await botClient.SendTextMessageAsync(message.Chat, "Не знаю таких слов, не понимаю :(");
             }
@@ -47,7 +84,7 @@ namespace TelegramBot
             Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(exception));
             return Task.CompletedTask;
         }
-        public static void BotLaunch() //ReceiverOptions HandleUpdateAsync
+        public static void BotLaunch()
         {
             Console.WriteLine("Запущен бот " + bot.GetMeAsync().Result.FirstName);
 
@@ -55,7 +92,7 @@ namespace TelegramBot
             var cancellationToken = cts.Token;
             var receiverOptions = new ReceiverOptions
             {
-                AllowedUpdates = { }, // receive all update types
+                AllowedUpdates = { },
             };
             bot.StartReceiving(
                 HandleUpdateAsync,
@@ -66,40 +103,44 @@ namespace TelegramBot
             Console.ReadLine();
         }
     }
-    public class RandomTextCats : Bot
+    public class RandomTextCats
     {
         public static List<string> _randomTextCats = new List<string>();
         public static void PutInToListRandomTextCats()
         {
-            for (int i = 0; i < 21; i++)
+            for (int i = 0; i < 51; i++)
             {
                 _randomTextCats.Add(i + ".jpg");
-            }
-        }
-        public async Task hzhzhz (ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
-        {
-            PutInToListRandomTextCats();
-            var message = update.Message;
-            var randonLove = new Random();
-            Rand = randonLove.Next(1, 20);
-            for (int i = 1; i <= _randomTextCats.Count; i++)
-            {
-                if (Rand == i)
-                {
-                    using (var fileStream = new FileStream(_randomTextCats[i], FileMode.Open, FileAccess.Read, FileShare.Read))
-                        await botClient.SendPhotoAsync(message.Chat.Id, new InputOnlineFile(fileStream));
-                    return;
-                }
             }
         }
     }
     public class RandomText
     {
+        public static List<string> _randomText = new List<string>();
+        public static string path = "RandomText.txt";
+        public async static void File()
+        {
+            using (StreamReader reader = new StreamReader(path))
+            {
+                string text;
+                while ((text = await reader.ReadLineAsync()) != null)
+                {
+                    _randomText.Add(text);
+                }
+            }
 
+        }
     }
-    public class RandomCats
+    public class RandomKit
     {
-
+        public static List<string> _randomKit = new List<string>();
+        public static void PutInToListRandomKit()
+        {
+            for (int i = 0; i < 51; i++)
+            {
+                _randomKit.Add(i + ".jpg");
+            }
+        }
     }
     class Program
     {
