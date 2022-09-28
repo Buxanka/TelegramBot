@@ -64,7 +64,7 @@ namespace TelegramBot
                 {
                     RandomKit.PutInToListRandomKit();
                     var randomKit = new Random();
-                    Rand = randomKit.Next(0, 4);
+                    Rand = randomKit.Next(0, 25);
                     for (int i = 1; i <= RandomKit._randomKit.Count; i++)
                     {
                         if (Rand == i)
@@ -80,7 +80,6 @@ namespace TelegramBot
         }
         public static Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
-            // Некоторые действия
             Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(exception));
             return Task.CompletedTask;
         }
